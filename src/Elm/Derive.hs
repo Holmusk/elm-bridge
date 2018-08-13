@@ -187,7 +187,7 @@ deriveElmDef opts name =
          DataD _ _ tyVars _ constrs _ ->
              case constrs of
                [] -> fail "Can not derive empty data decls"
-               [RecC _ conFields] -> deriveAlias False opts name tyVars conFields
+--               [RecC _ conFields] -> deriveAlias False opts name tyVars conFields
                _ -> deriveSum opts name tyVars constrs
          NewtypeD [] _ [] Nothing (NormalC _ [(Bang NoSourceUnpackedness NoSourceStrictness, otherTy)]) [] ->
             deriveSynonym opts name [] otherTy
@@ -195,6 +195,8 @@ deriveElmDef opts name =
           if A.unwrapUnaryRecords opts
             then deriveSynonym opts name [] otherTy
             else deriveAlias True opts name [] conFields
+         NewtypeD [] _ tyVars _ constr _ ->
+            deriveSum opts name tyVars [constr]
          TySynD _ vars otherTy ->
              deriveSynonym opts name vars otherTy
          _ -> fail ("Oops, can only derive data and newtype, not this: " ++ show tyCon)
